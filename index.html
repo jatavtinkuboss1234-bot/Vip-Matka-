@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MatkaPro Live</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0b0f19; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .glass-card { background: rgba(30, 41, 59, 0.78); border: 1px solid rgba(148, 163, 184, 0.15); backdrop-filter: blur(10px); }
+    .pill-active { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4); }
+  </style>
+</head>
+<body class="pb-20 select-none">
+
+  <header class="sticky top-0 z-30 bg-[#0b0f19]/95 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-white shadow">M</div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-white leading-none">MatkaPro <span class="text-amber-400">Live</span></h1>
+        <p id="syncStatus" class="text-[11px] text-emerald-400 mt-0.5">● Auto-Engine Active</p>
+      </div>
+    </div>
+    <button onclick="syncLiveData()" class="px-3 py-1.5 rounded-lg bg-slate-800 active:scale-95 text-xs font-semibold text-amber-400 border border-slate-700">
+      ↻ Sync
+    </button>
+  </header>
+
+  <div id="marketStrip" class="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 bg-[#0f1626] border-b border-slate-800/80"></div>
+
+  <section class="px-4 pt-3">
+    <div class="glass-card rounded-2xl p-4 relative overflow-hidden">
+      <div class="flex justify-between items-start">
+        <div>
+          <span id="marketTiming" class="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300">09:05 AM - 10:05 AM</span>
+          <h2 id="activeMarketTitle" class="text-xl font-extrabold text-white mt-1.5">LAXMI MORNING</h2>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Latest Result</span>
+          <span id="latestResultDisplay" class="text-xl font-black text-amber-400 tracking-wider">580 - 38 - 233</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="px-4 mt-4">
+    <div class="grid grid-cols-3 gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800">
+      <button onclick="switchTab('auto')" id="tab-auto" class="py-2 rounded-lg text-xs font-bold transition pill-active">Auto Guess</button>
+      <button onclick="switchTab('close')" id="tab-close" class="py-2 rounded-lg text-xs font-bold text-slate-400 transition">Live Close</button>
+      <button onclick="switchTab('chart')" id="tab-chart" class="py-2 rounded-lg text-xs font-bold text-slate-400 transition">Chart Data</button>
+    </div>
+  </div>
+
+  <main id="view-auto" class="px-4 mt-4 space-y-4">
+    <div class="glass-card rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <h3 class="text-sm font-bold text-white">4 Strong OTC (40% Direct)</h3>
+          <p class="text-[11px] text-slate-400">Hot Frequency + Cut Digit</p>
+        </div>
+        <button onclick="copyText('otcBox')" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold active:scale-95">Copy</button>
+      </div>
+      <div id="otcBox" class="grid grid-cols-4 gap-2 text-center font-black text-xl text-white"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-4 border-emerald-500/30">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <h3 class="text-sm font-bold text-emerald-400">Reverse 6-Ank (60% Coverage)</h3>
+          <p class="text-[11px] text-slate-400">Ulta Logic: Top 4 ko chhodkar bache 6 ank</p>
+        </div>
+        <button onclick="copyText('reverseBox')" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold active:scale-95">Copy</button>
+      </div>
+      <div id="reverseBox" class="grid grid-cols-6 gap-1.5 text-center font-black text-lg text-emerald-300"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <h3 class="text-sm font-bold text-white">Top 20 Hot Jodis</h3>
+          <p class="text-[11px] text-slate-400">Chart Repeat + Reverse Pattern</p>
+        </div>
+        <button onclick="copyText('jodi20Box')" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold active:scale-95">Copy</button>
+      </div>
+      <div id="jodi20Box" class="bg-slate-950/70 p-3 rounded-xl font-mono text-sm text-emerald-300 leading-relaxed tracking-wide"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <h3 class="text-sm font-bold text-amber-300">Top 12 Filtered Sangam</h3>
+          <p class="text-[11px] text-slate-400">48,400 mein se chhante hue Top Open-Close Panna</p>
+        </div>
+        <button onclick="copyText('sangamBox')" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold active:scale-95">Copy</button>
+      </div>
+      <div id="sangamBox" class="bg-slate-950/70 p-3 rounded-xl font-mono text-xs text-amber-200 leading-relaxed"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <h3 class="text-sm font-bold text-white">50 Balanced Jodis (50% Coverage)</h3>
+          <p class="text-[11px] text-slate-400">Full Statistical Set</p>
+        </div>
+        <button onclick="copyText('jodi50Box')" class="px-3 py-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-bold active:scale-95">Copy</button>
+      </div>
+      <div id="jodi50Box" class="bg-slate-950/70 p-3 rounded-xl font-mono text-xs text-slate-300 leading-relaxed"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-4 space-y-3">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-white">Filtered Pannas (Single / Double / Triple)</h3>
+          <p class="text-[11px] text-slate-400">Auto-sorted by OTC Ank</p>
+        </div>
+        <button onclick="copyAllPannas()" class="px-3 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold active:scale-95">Copy All</button>
+      </div>
+      <div>
+        <span class="text-[11px] font-bold text-amber-400 uppercase">Single Panna</span>
+        <div id="singlePannaBox" class="bg-slate-950/70 p-2.5 rounded-xl font-mono text-xs text-slate-200 mt-1 leading-relaxed"></div>
+      </div>
+      <div>
+        <span class="text-[11px] font-bold text-emerald-400 uppercase">Double Panna</span>
+        <div id="doublePannaBox" class="bg-slate-950/70 p-2.5 rounded-xl font-mono text-xs text-slate-200 mt-1 leading-relaxed"></div>
+      </div>
+      <div>
+        <span class="text-[11px] font-bold text-rose-400 uppercase">Triple Panna</span>
+        <div id="triplePannaBox" class="bg-slate-950/70 p-2.5 rounded-xl font-mono text-xs text-slate-200 mt-1 leading-relaxed"></div>
+      </div>
+    </div>
+  </main>
+
+  <section id="view-close" class="px-4 mt-4 space-y-4 hidden">
+    <div class="glass-card rounded-2xl p-4">
+      <label class="text-xs font-bold text-slate-300 block mb-2">Open Panna Daalein (Jaise: 145 ya 580)</label>
+      <div class="flex gap-2">
+        <input id="openPannaInput" type="number" maxlength="3" placeholder="145" oninput="if(this.value.length>3)this.value=this.value.slice(0,3);"
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-lg font-black text-amber-400 tracking-widest focus:outline-none focus:border-amber-500" />
+        <button onclick="calculateClose()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 font-bold text-sm text-white active:scale-95 shadow">
+          Calculate
+        </button>
+      </div>
+    </div>
+
+    <div id="closeResultContainer" class="space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-4">
+        <div class="flex justify-between items-center mb-2">
+          <h3 id="closeHeaderTitle" class="text-sm font-bold text-white">Open 0 -> Top 6 Close Jodis</h3>
+          <button onclick="copyText('closeJodiBox')" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-bold">Copy</button>
+        </div>
+        <div id="closeJodiBox" class="bg-slate-950/70 p-3 rounded-xl font-mono text-base font-bold text-emerald-400"></div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-sm font-bold text-white">Close Family & Cut Pannas (50)</h3>
+          <button onclick="copyText('closePannaBox')" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-bold">Copy</button>
+        </div>
+        <div id="closePannaBox" class="bg-slate-950/70 p-3 rounded-xl font-mono text-xs text-slate-200 leading-relaxed"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-chart" class="px-4 mt-4 hidden">
+    <div class="glass-card rounded-2xl p-4">
+      <h3 class="text-sm font-bold text-white mb-1">Inbuilt Historical Record</h3>
+      <p class="text-[11px] text-slate-400 mb-3">Engine isi record ko scan karke OTC aur Jodi nikalta hai</p>
+      <div id="chartHistoryBox" class="grid grid-cols-7 gap-1.5 text-center font-mono text-xs"></div>
+    </div>
+  </section>
+
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50">
+    Copied to Clipboard!
+  </div>
+
+  <script>
+    let MARKETS = {
+      laxmi: { name: "LAXMI MORNING", timing: "09:05 AM - 10:05 AM", latest: "580 - 38 - 233", history: ["14","18","38","39","62","65","71","11","12","17","22","25","27","30","35","36","45","53","68","70","78","80","91","93","98","18","39","14","38","71","62","18","29","36","66","74","79","48","58","26","62","44"] },
+      kalyan: { name: "KALYAN", timing: "04:10 PM - 06:10 PM", latest: "248 - 49 - 135", history: ["49","14","69","94","27","72","50","05","38","83","16","61","44","99","22","77","33","88","19","64","41","96","25","70","36","81","49","14","69","45","90","12","67","34","89"] },
+      sridevi_night: { name: "SRIDEVI NIGHT", timing: "07:15 PM - 08:15 PM", latest: "260 - 89 - 450", history: ["59","62","80","03","04","06","08","10","11","12","14","18","30","31","32","33","35","42","44","48","50","55","56","57","60","61","64","76","77","79","86","87","62","33","60","62","44","03","72","64","13","80"] },
+      supreme_night: { name: "SUPREME NIGHT", timing: "08:45 PM - 10:45 PM", latest: "145 - 05 - 230", history: ["05","09","01","04","02","06","50","90","10","40","55","00","15","60","45","95","25","70","35","80","05","09","01","04","14","69","28","73","37","82","05","50","09","90","01"] },
+      milan_day: { name: "MILAN DAY", timing: "03:00 PM - 05:00 PM", latest: "369 - 81 - 470", history: ["81","36","18","63","47","92","24","79","55","00","13","68","31","86","29","74","40","95","17","62","81","36","45","90","23","78","56","01"] },
+      rajdhani_night: { name: "RAJDHANI NIGHT", timing: "09:30 PM - 11:45 PM", latest: "128 - 16 - 349", history: ["16","61","11","66","27","72","38","83","49","94","05","50","14","69","23","78","35","80","42","97","16","61","19","64","28","73"] }
+    };
+
+    let currentMarketKey = 'laxmi';
+    const CUT_MAP = { '0':'5', '1':'6', '2':'7', '3':'8', '4':'9', '5':'0', '6':'1', '7':'2', '8':'3', '9':'4' };
+    const ALL_DIGITS = ['0','1','2','3','4','5','6','7','8','9'];
+
+    function generateAll220Pannas() {
+      const list = [];
+      const order = ['1','2','3','4','5','6','7','8','9','0'];
+      for (let i = 0; i < 10; i++) {
+        for (let j = i; j < 10; j++) {
+          for (let k = j; k < 10; k++) {
+            const p = order[i] + order[j] + order[k];
+            const sum = (parseInt(order[i]) + parseInt(order[j]) + parseInt(order[k])) % 10;
+            const type = (i === j && j === k) ? 'triple' : (i === j || j === k || i === k) ? 'double' : 'single';
+            list.push({ panna: p, ank: sum.toString(), type });
+          }
+        }
+      }
+      return list;
+    }
+    const ALL_PANNAS = generateAll220Pannas();
+
+    async function syncLiveData() {
+      const statusEl = document.getElementById('syncStatus');
+      statusEl.textContent = "↻ Checking live feed...";
+      try {
+        const res = await fetch('./data.json?t=' + Date.now());
+        if (res.ok) {
+          const liveJson = await res.json();
+          MARKETS = { ...MARKETS, ...liveJson };
+          statusEl.textContent = "● Live Updated (" + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ")";
+          showToast("Live Data Synced!");
+        } else { statusEl.textContent = "● Inbuilt Engine Active"; }
+      } catch (e) { statusEl.textContent = "● Offline / Inbuilt Mode"; }
+      renderMarket();
+    }
+
+    function renderMarketStrip() {
+      const strip = document.getElementById('marketStrip');
+      strip.innerHTML = Object.keys(MARKETS).map(key => {
+        const active = key === currentMarketKey;
+        return `<button onclick="selectMarket('${key}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition ${active ? 'pill-active' : 'bg-slate-800/80 text-slate-300 border border-slate-700/60'}">${MARKETS[key].name}</button>`;
+      }).join('');
+    }
+
+    function selectMarket(key) { currentMarketKey = key; renderMarketStrip(); renderMarket(); }
+
+    function renderMarket() {
+      const m = MARKETS[currentMarketKey];
+      document.getElementById('activeMarketTitle').textContent = m.name;
+      document.getElementById('marketTiming').textContent = m.timing || "Live Market";
+      document.getElementById('latestResultDisplay').textContent = m.latest;
+
+      const digitFreq = {}, jodiFreq = {};
+      for (let d = 0; d <= 9; d++) digitFreq[d] = 0;
+      m.history.forEach(j => {
+        jodiFreq[j] = (jodiFreq[j] || 0) + 1;
+        digitFreq[j[0]] = (digitFreq[j[0]] || 0) + 1;
+        digitFreq[j[1]] = (digitFreq[j[1]] || 0) + 1;
+      });
+
+      const sortedDigits = Object.keys(digitFreq).sort((a,b) => digitFreq[b] - digitFreq[a]);
+      const otcSet = new Set();
+      for (let d of sortedDigits) { otcSet.add(d); otcSet.add(CUT_MAP[d]); if (otcSet.size >= 4) break; }
+      const otcList = Array.from(otcSet).slice(0, 4);
+      document.getElementById('otcBox').innerHTML = otcList.map(d => `<div class="bg-slate-950 border border-amber-500/40 rounded-xl py-3 shadow-inner text-amber-400">${d}</div>`).join('');
+
+      const reverseList = ALL_DIGITS.filter(d => !otcList.includes(d));
+      document.getElementById('reverseBox').innerHTML = reverseList.map(d => `<div class="bg-slate-950 border border-emerald-500/30 rounded-xl py-2.5 text-emerald-300">${d}</div>`).join('');
+
+      const allJodis = [];
+      for (let i = 0; i < 100; i++) {
+        const j = i.toString().padStart(2, '0');
+        let score = (jodiFreq[j] || 0) * 10;
+        if (otcList.includes(j[0])) score += 4;
+        if (otcList.includes(j[1])) score += 3;
+        allJodis.push({ jodi: j, score });
+      }
+      allJodis.sort((a,b) => b.score - a.score);
+
+      const top20 = allJodis.slice(0, 20).map(x => x.jodi);
+      document.getElementById('jodi20Box').textContent = top20.join(', ');
+      document.getElementById('jodi50Box').textContent = allJodis.slice(0, 50).map(x => x.jodi).join(', ');
+
+      const sangams = [];
+      for (let j of top20.slice(0, 6)) {
+        const openP = ALL_PANNAS.filter(p => p.ank === j[0] && p.type === 'single').slice(0, 2);
+        const closeP = ALL_PANNAS.filter(p => p.ank === j[1] && p.type === 'single').slice(0, 2);
+        if (openP[0] && closeP[0]) sangams.push(`${openP[0].panna}-${j}-${closeP[0].panna}`);
+        if (openP[1] && closeP[1]) sangams.push(`${openP[1].panna}-${j}-${closeP[1].panna}`);
+      }
+      document.getElementById('sangamBox').textContent = sangams.slice(0, 12).join('  |  ');
+
+      const matchingPannas = ALL_PANNAS.filter(p => otcList.includes(p.ank));
+      document.getElementById('singlePannaBox').textContent = matchingPannas.filter(p => p.type === 'single').slice(0, 36).map(p => p.panna).join(', ');
+      document.getElementById('doublePannaBox').textContent = matchingPannas.filter(p => p.type === 'double').slice(0, 12).map(p => p.panna).join(', ');
+      const triples = matchingPannas.filter(p => p.type === 'triple').map(p => p.panna);
+      document.getElementById('triplePannaBox').textContent = triples.length ? triples.join(', ') : '000, 555';
+
+      document.getElementById('chartHistoryBox').innerHTML = m.history.map(j => `<div class="bg-slate-900 border border-slate-800 rounded py-1.5 text-slate-200 font-bold">${j}</div>`).join('');
+    }
+
+    function calculateClose() {
+      const val = document.getElementById('openPannaInput').value.trim();
+      if (val.length !== 3) { showToast("3 ank ka Open Panna daalein!"); return; }
+      const d1 = val[0], d2 = val[1], d3 = val[2];
+      const openAnk = ((parseInt(d1) + parseInt(d2) + parseInt(d3)) % 10).toString();
+      const cutAnk = CUT_MAP[openAnk];
+      const closeDigits = Array.from(new Set([cutAnk, openAnk, d1, d2, d3, CUT_MAP[d1], CUT_MAP[d2], CUT_MAP[d3]])).slice(0, 6);
+      document.getElementById('closeHeaderTitle').textContent = `Open ${openAnk} (${val}) -> Top 6 Close Jodis`;
+      document.getElementById('closeJodiBox').textContent = closeDigits.map(c => openAnk + c).join(', ');
+      document.getElementById('closePannaBox').textContent = ALL_PANNAS.filter(p => closeDigits.includes(p.ank)).slice(0, 50).map(p => p.panna).join(', ');
+      document.getElementById('closeResultContainer').classList.remove('hidden');
+    }
+
+    function switchTab(tab) {
+      ['auto', 'close', 'chart'].forEach(t => {
+        document.getElementById('view-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('tab-' + t);
+        if (t === tab) { btn.classList.add('pill-active'); btn.classList.remove('text-slate-400'); }
+        else { btn.classList.remove('pill-active'); btn.classList.add('text-slate-400'); }
+      });
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id).innerText.replace(/\n+/g, ', ');
+      navigator.clipboard.writeText(text);
+      showToast("Copied!");
+    }
+
+    function copyAllPannas() {
+      navigator.clipboard.writeText(`Single: ${document.getElementById('singlePannaBox').innerText}\nDouble: ${document.getElementById('doublePannaBox').innerText}\nTriple: ${document.getElementById('triplePannaBox').innerText}`);
+      showToast("All Pannas Copied!");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('opacity-0');
+      setTimeout(() => t.classList.add('opacity-0'), 2000);
+    }
+
+    renderMarketStrip();
+    syncLiveData();
+  </script>
+</body>
+</html>
